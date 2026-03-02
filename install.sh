@@ -5,7 +5,7 @@ set -euo pipefail
 # CulminationAI Workflow — Bootstrap Installer
 #
 # Usage:
-#   curl -sL https://raw.githubusercontent.com/culminationAI/culminationWorkFlow/main/install.sh | bash
+#   curl -sL https://raw.githubusercontent.com/culminationAI/culminationA2WorkflowTetta/main/install.sh | bash
 #   # OR
 #   bash install.sh
 # ============================================================
@@ -19,7 +19,7 @@ ok()   { echo -e "${GREEN}[OK]${NC} $1"; }
 warn() { echo -e "${YELLOW}[!!]${NC} $1"; }
 fail() { echo -e "${RED}[FAIL]${NC} $1"; exit 1; }
 
-REPO="https://github.com/culminationAI/culminationWorkFlow.git"
+REPO="https://github.com/culminationAI/culminationA2WorkflowTetta.git"
 TARGET_DIR="$(pwd)"
 
 echo "================================================"

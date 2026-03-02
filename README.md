@@ -1,4 +1,4 @@
-# CulminationAI Workflow
+# CulminationA2 Workflow
 
 Multi-agent orchestration framework for Claude Code. Self-aware, self-improving, memory-persistent.
 
@@ -8,19 +8,19 @@ Multi-agent orchestration framework for Claude Code. Self-aware, self-improving,
 - **18 protocols** governing behavior, from task routing to self-improvement
 - **Persistent memory** via Qdrant (vector) + Neo4j (graph) — zero API cost
 - **Pre-populated self-knowledge** — the coordinator knows its own architecture from day one
-- **Adaptive initialization** — 9-phase onboarding that learns your project, style, and preferences
+- **Adaptive initialization** — 11-phase onboarding that learns your project, style, and preferences
 - **Gap detection + self build-up** — identifies capability gaps and builds new agents/protocols as needed
 
 ## Quick Start
 
 ```bash
 # Clone and setup
-git clone https://github.com/culminationAI/culminationA2Workflow.git
-cd culminationA2Workflow
+git clone https://github.com/culminationAI/culminationA2WorkflowTetta.git
+cd culminationA2WorkflowTetta
 chmod +x setup.sh && ./setup.sh
 
 # Or one-liner:
-curl -sL https://raw.githubusercontent.com/culminationAI/culminationA2Workflow/main/install.sh | bash
+curl -sL https://raw.githubusercontent.com/culminationAI/culminationA2WorkflowTetta/main/install.sh | bash
 ```
 
 After setup, open the directory in your IDE and start Claude Code. The workflow detects itself and begins initialization automatically.
@@ -57,7 +57,7 @@ After setup, open the directory in your IDE and start Claude Code. The workflow 
 ## How It Works
 
 1. **setup.sh** installs dependencies, finds free ports, starts Docker containers, loads self-knowledge seed
-2. **Claude Code** reads CLAUDE.md, detects `_WORKFLOW_NEEDS_INIT`, begins 9-phase initialization
+2. **Claude Code** reads CLAUDE.md, detects `_WORKFLOW_NEEDS_INIT`, begins 11-phase initialization
 3. **Phase 2 (Greet)** — coordinator introduces itself, you choose a code name
 4. **Phase 3 (Explore)** — pathfinder scans YOUR project (not the workflow) and loads it into memory
 5. **Phase 4 (Adapt)** — creates domain-specific agents based on your project archetype
