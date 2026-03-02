@@ -1,5 +1,25 @@
 [
   {
+    "text": "The coordinator is the central orchestrator of this CulminationAI Workflow instance. Its code name is set during initialization Phase 2 and serves as the root node of the identity graph in Neo4j. All agents, protocols, and MCP servers are linked to this root identity.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "coordinator_identity",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "coordinator_identity", "type": "identity_anchor"}
+    ],
+    "relations": [
+      {"source": "coordinator_identity", "relation": "COORDINATES", "target": "pathfinder"},
+      {"source": "coordinator_identity", "relation": "COORDINATES", "target": "protocol_manager"},
+      {"source": "coordinator_identity", "relation": "COORDINATES", "target": "engineer"},
+      {"source": "coordinator_identity", "relation": "COORDINATES", "target": "llm_engineer"},
+      {"source": "coordinator_identity", "relation": "OWNS", "target": "capability_map"}
+    ]
+  },
+  {
     "text": "pathfinder agent handles project exploration, architecture scanning, memory maintenance (verify/dedupe/cleanup), post-refactor verification, connection mapping, knowledge extraction, web research, and self-explore mode. Model: sonnet. Tools: Read, Grep, Glob, Write, Edit, Bash, WebSearch, WebFetch. No MCP servers — uses Python scripts for memory operations.",
     "user_id": "system",
     "agent_id": "coordinator",

@@ -80,16 +80,20 @@ Find external information for project analysis.
 ### 6. Self-Explore
 
 Introspective scan of the workflow's own architecture — not the user's project code.
+Root node of the identity graph = coordinator's code name (set during initialization Phase 2, Step 3).
 
-1. **Coordinator:** Glob `.claude/agents/*.md` + Read → agent inventory (names, expertise, routing rules)
-2. **Coordinator:** Glob `protocols/**/*.md` + Read → protocol inventory (purpose, triggers, dependencies)
-3. **Coordinator:** Read `mcp/mcp.json` + `mcp/mcp-full.json` → server inventory (active vs available)
-4. **Coordinator:** Bash `python3 memory/scripts/memory_verify.py --quick` → memory health (record count by type)
-5. **Coordinator:** Read `CLAUDE.md` → rules count, protocol index, subagent table, version
-6. **Pathfinder:** Neo4j cross-reference (agents ↔ dispatcher routing, protocols ↔ CLAUDE.md index) + Qdrant semantic coverage check → identify gaps or orphaned references
-7. **Coordinator:** Write `docs/self-architecture/capability-map.md` with full capability report
+1. **Coordinator:** Read `user-identity.md` → extract coordinator code name (`{AgentName}`)
+2. **Coordinator:** Glob `.claude/agents/*.md` + Read → agent inventory (names, expertise, routing rules)
+3. **Coordinator:** Glob `protocols/**/*.md` + Read → protocol inventory (purpose, triggers, dependencies)
+4. **Coordinator:** Read `mcp/mcp.json` + `mcp/mcp-full.json` → server inventory (active vs available)
+5. **Coordinator:** Bash `python3 memory/scripts/memory_verify.py --quick` → memory health (record count by type)
+6. **Coordinator:** Read `CLAUDE.md` → rules count, protocol index, subagent table, version
+7. **Pathfinder:** Neo4j cross-reference (agents ↔ dispatcher routing, protocols ↔ CLAUDE.md index) + Qdrant semantic coverage check → identify gaps or orphaned references. All graph entities anchored to root node `{AgentName}`.
+8. **Coordinator:** Write `docs/self-architecture/capability-map.md` with full capability report
 
-Trigger: self-build-up protocol Phase 1, coordinator request `/self-explore`
+**Identity anchoring:** The coordinator's name is the root node of the Neo4j knowledge graph. All seed records (agents, protocols, MCP servers) are linked via relations to `{AgentName}`. Self-explore builds the graph around this identity anchor.
+
+Trigger: self-build-up protocol Phase 1, coordinator request `/self-explore`, initialization Phase 2 Step 4
 See: `protocols/core/self-build-up.md`, `protocols/core/gap-analysis.md`
 
 **Important**: Self-explore does NOT modify agents, protocols, or code. It only writes `capability-map.md`. Pure introspection.
@@ -143,6 +147,7 @@ Return JSON-summary to coordinator
 | Self-Explore | Scan agents/protocols | Coordinator | Glob + Read |
 | Self-Explore | Graph cross-reference | Pathfinder | Neo4j traversal |
 | Self-Explore | Semantic scoring | Pathfinder | Qdrant similarity |
+| Self-Explore | Identity anchoring | Coordinator | Read (user-identity.md) |
 
 ## Example
 

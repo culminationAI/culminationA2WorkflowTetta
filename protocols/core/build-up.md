@@ -139,6 +139,67 @@ Record the build-up in memory:
 }
 ```
 
+### Step 10: Version Bump
+
+After storing the build-up record, increment the workflow version:
+
+**Format:** `MAJOR.MINOR` (MINOR = two digits: 00–99)
+
+| Path | Increment |
+|------|-----------|
+| Quick path (correction) | +0.01 |
+| Full path (architectural) | +0.10 |
+
+**Calculation:**
+```
+new = current + increment
+if floor(new) > floor(current): new = ceil(current)  # boundary → N.0
+```
+
+**Examples:**
+- 1.00 + 0.01 = 1.01
+- 1.09 + 0.01 = 1.10
+- 1.95 + 0.10 = 2.0
+- 1.99 + 0.01 = 2.0
+- 2.0 + 0.01 = 2.01
+
+**Apply:**
+1. Update `<!-- WORKFLOW_VERSION: {new} -->` in CLAUDE.md
+2. Store: `{type: "build_up", subtype: "version_bump", text: "Version {old} → {new}"}`
+
+### Step 11: Sync (Conditional)
+
+Push myself to personal repository after build-up, if storage mode is "repo".
+
+1. Read `user-identity.md` → Storage Mode
+2. If mode != "repo" → skip this step
+
+**Process:**
+1. `git fetch origin` (personal repo, not project repo)
+2. Compare versions: `local_version` vs `remote_version` (read from remote CLAUDE.md)
+   - If remote > local:
+     WARN to user: "Your brain repo has a newer version (v{remote}). Another project may have evolved it. Pull first? (yes/no)"
+     If yes → `git pull --rebase`, re-read CLAUDE.md, continue
+     If no → abort sync, log warning
+   - If local >= remote → proceed
+3. Collect core brain files:
+   - CLAUDE.md, `.claude/agents/` (base only), `protocols/core|agents|knowledge|quality/`
+   - `docs/self-architecture/`, `specs/`, `memory/scripts/`, `mcp/`
+   - `setup.sh`, `install.sh`, `.gitignore`, `README.md`
+4. `git add` → `git commit "build-up(v{new}): {summary}"`
+5. If new/updated specs exist in `spec-registry.json`:
+   - Export each spec as individual JSON to `specs/`
+   - Update `specs/index.json`
+   - Include in commit
+6. `git push origin main`
+7. Log: `logs/security-audit.log` → `[TIMESTAMP] [INFO] [sync] pushed v{new} to {repo}`
+
+**Multi-project safety:**
+- Always `git fetch` before push
+- If remote version is higher → warning + user decision
+- Version is always monotonically increasing
+- Specs are additive — merge conflicts are minimal
+
 ## Quick Path (Simple Corrections)
 
 For single-rule fixes (most user corrections):
@@ -209,6 +270,11 @@ When `RESEARCH_OPTIN=true` (set during initialization Phase 7), build-up records
    }
    ```
 4. Periodically (on user request or at session end), staged records are pushed to `culminationAI/research-data` via PR
+4.5. **Spec upload** (if build-up created/modified a spec):
+   - Anonymize spec: remove project-specific paths, names, data. Keep: domain, type, description, capability definition
+   - Write to `research/specs/{spec-id}-anonymized.json`
+   - Specs are pushed together with build-up records to `culminationAI/culminationA2Workflow` → `community-specs/` via PR
+   - Community specs are available to all through the official repo
 5. **Mandatory validation before push:**
    ```bash
    python3 memory/scripts/research_validate.py research/build-up/

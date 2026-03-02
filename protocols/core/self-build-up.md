@@ -80,8 +80,14 @@ Before designing a new build manifest:
 1. Coordinator reads `docs/self-architecture/spec-registry.json` (Read)
 2. For each capability needed, coordinator checks if a matching spec exists (Grep spec descriptions)
 3. If spec exists (state=AVAILABLE) → reference it by ID in build's `spec_refs`. Do NOT recreate.
-4. If spec does NOT exist → create new spec entry in `spec-registry.json`, then reference it.
-5. New specs get state=AVAILABLE immediately upon creation.
+4. If spec does NOT exist locally AND storage mode == "repo" (read from `user-identity.md`):
+   a. `gh api repos/{repo}/contents/specs/index.json` → read remote spec index
+   b. Find matching spec by domain + description
+   c. If found → `gh api repos/{repo}/contents/specs/{spec-file}` → download spec
+   d. Import into local `spec-registry.json`
+   e. Reference by ID (cherry-pick from remote)
+5. If spec not found anywhere → create new spec entry in `spec-registry.json`, then reference it.
+6. New specs get state=AVAILABLE immediately upon creation.
 
 **4a. Design manifest:**
 
@@ -313,6 +319,8 @@ If `build-registry.json` is missing, skip silently and create it on next build c
 8. Coordinator presents gap findings and build proposal to user before activation — never activate silently
 9. Build manifest retains full WHY/WHAT even after archival
 10. Memory records from builds persist even after build deactivation — knowledge is permanent
+
+**Note:** Build activations and deactivations do NOT trigger version bumps. Only the reactive build-up protocol (corrections, routing, workflow, architectural changes) bumps the version via Step 10.
 
 ## Integration
 

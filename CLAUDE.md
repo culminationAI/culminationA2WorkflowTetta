@@ -122,10 +122,28 @@ Persistent learning file `user-identity.md` in workspace root. Created during in
 
 ## Workflow Versioning
 
-- `0.1` — fresh install, pre-initialization
+- `0.2` — fresh install, pre-initialization
 - `1.0` — initialization complete, build-up passed
-- `1.x` — incremented by build-up on significant improvements
+- `1.x` — incremented by build-up:
+  - Quick path (correction): +0.01
+  - Full path (architectural): +0.10
+  - Integer boundary → N.0 (e.g., 1.99 + 0.01 = 2.0)
 - Version stored in CLAUDE.md header: `<!-- WORKFLOW_VERSION: X.X -->`
+- After each build-up: Step 10 bumps version, Step 11 syncs to personal repo (if configured)
+
+## Distributed Architecture
+
+Three-tier storage model:
+1. **Official repo** (`culminationAI/culminationA2Workflow`) — canonical version + community specs
+2. **Personal repo** (user's, e.g. `user/my-agent`) — evolved brain + personal specs
+3. **Project-local** — agent running inside a specific project
+
+Storage mode set during initialization Phase 9. If mode = "repo":
+- After each build-up, coordinator pushes itself to personal repo (Step 11)
+- Specs shared between projects via `specs/index.json`
+- Version conflict detection: `git fetch` before push, warn if remote > local
+
+See: `protocols/core/build-up.md` Step 11, `protocols/core/initialization.md` Phase 9
 
 ## Data Attribution
 

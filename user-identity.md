@@ -14,6 +14,13 @@
 - **Name:** (auto-detected from directory/repo)
 - **Archetype:** (detected during Phase 3)
 
+## Storage
+- **Mode:** (repo | local — set during initialization Phase 9)
+- **Repository:** (owner/name — if mode is repo)
+
+## Origin
+- **Source:** (official | owner/repo-name — where the brain was loaded from)
+
 ## Patterns
 (Discovered during work sessions)
 
