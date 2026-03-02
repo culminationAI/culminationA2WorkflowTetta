@@ -1,0 +1,733 @@
+[
+  {
+    "text": "pathfinder agent handles project exploration, architecture scanning, memory maintenance (verify/dedupe/cleanup), post-refactor verification, connection mapping, knowledge extraction, web research, and self-explore mode. Model: sonnet. Tools: Read, Grep, Glob, Write, Edit, Bash, WebSearch, WebFetch. No MCP servers — uses Python scripts for memory operations.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "agent",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "pathfinder", "type": "agent"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "DISPATCHES", "target": "pathfinder"},
+      {"source": "pathfinder", "relation": "IMPLEMENTS", "target": "exploration_protocol"},
+      {"source": "pathfinder", "relation": "IMPLEMENTS", "target": "memory_protocol"},
+      {"source": "pathfinder", "relation": "USES_TOOL", "target": "bash"},
+      {"source": "pathfinder", "relation": "USES_TOOL", "target": "web_search"}
+    ]
+  },
+  {
+    "text": "protocol-manager agent handles protocol lifecycle: create, organize, find, index, maintain, and dependency analysis. Model: sonnet. Tools: Read, Grep, Glob, Write, Edit. No MCP servers. Primary implementer of meta protocol.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "agent",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "protocol_manager", "type": "agent"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "DISPATCHES", "target": "protocol_manager"},
+      {"source": "protocol_manager", "relation": "IMPLEMENTS", "target": "meta_protocol"}
+    ]
+  },
+  {
+    "text": "engineer agent handles Python code, Docker deployment, API integration, scripts, tests, infrastructure, and CI/CD. Model: sonnet. Tools: Read, Grep, Glob, Write, Edit, Bash. MCP servers: neo4j, qdrant, github.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "agent",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "engineer", "type": "agent"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "DISPATCHES", "target": "engineer"},
+      {"source": "engineer", "relation": "USES_MCP", "target": "neo4j"},
+      {"source": "engineer", "relation": "USES_MCP", "target": "qdrant"},
+      {"source": "engineer", "relation": "USES_MCP", "target": "github"}
+    ]
+  },
+  {
+    "text": "llm-engineer agent handles prompt design, context engineering, model routing, agent creation, system prompt optimization, and token budgets. Model: sonnet. Tools: Read, Grep, Glob, Write, Edit, WebSearch, WebFetch. MCP servers: github.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "agent",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "llm_engineer", "type": "agent"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "DISPATCHES", "target": "llm_engineer"},
+      {"source": "llm_engineer", "relation": "IMPLEMENTS", "target": "context_engineering_protocol"},
+      {"source": "llm_engineer", "relation": "USES_MCP", "target": "github"}
+    ]
+  },
+  {
+    "text": "dispatcher protocol routes every user request using T1-T5 tier classification. Performs pre-classification gap check. Triggers parallel gap-check for T3+ tasks. Category: core. Trigger: every user request. File: protocols/core/dispatcher.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "dispatcher_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "dispatcher_protocol"},
+      {"source": "dispatcher_protocol", "relation": "DEPENDS_ON", "target": "gap_analysis_protocol"},
+      {"source": "dispatcher_protocol", "relation": "DEPENDS_ON", "target": "query_optimization_protocol"}
+    ]
+  },
+  {
+    "text": "initialization protocol runs 9-phase onboarding: Greet, Explore, Adapt, Deploy, Validate, Build-Up, Plan. Creates user-identity.md, domain agents, and memory records. Category: core. Trigger: _WORKFLOW_NEEDS_INIT marker or /init command. File: protocols/core/initialization.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "initialization_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "initialization_protocol"},
+      {"source": "initialization_protocol", "relation": "DEPENDS_ON", "target": "exploration_protocol"},
+      {"source": "initialization_protocol", "relation": "DEPENDS_ON", "target": "agent_creation_protocol"}
+    ]
+  },
+  {
+    "text": "build-up protocol handles reactive self-improvement. User corrections trigger learning storage and improvement testing. Category: core. Trigger: user correction or session-end review. PROTECTED from self-modification. File: protocols/core/build-up.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "build_up_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "build_up_protocol"},
+      {"source": "build_up_protocol", "relation": "DEPENDS_ON", "target": "testing_protocol"},
+      {"source": "build_up_protocol", "relation": "DEPENDS_ON", "target": "cloning_protocol"}
+    ]
+  },
+  {
+    "text": "self-build-up protocol handles proactive capability building. Detects gaps and manages build lifecycle states: DRAFT, ACTIVE, BUFFERED, ARCHIVED. Category: core. Trigger: gap detection. File: protocols/core/self-build-up.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "self_build_up_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "self_build_up_protocol"},
+      {"source": "self_build_up_protocol", "relation": "DEPENDS_ON", "target": "gap_analysis_protocol"},
+      {"source": "self_build_up_protocol", "relation": "DEPENDS_ON", "target": "agent_creation_protocol"}
+    ]
+  },
+  {
+    "text": "gap-analysis protocol detects capability gaps across 5 dimensions: agent, protocol, memory, MCP, and knowledge. Runs lightweight scan at session start and deep scan on demand. Category: core. File: protocols/core/gap-analysis.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "gap_analysis_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "gap_analysis_protocol"},
+      {"source": "pathfinder", "relation": "IMPLEMENTS", "target": "gap_analysis_protocol"}
+    ]
+  },
+  {
+    "text": "coordination protocol manages parallel agent task execution using fork-join patterns. Category: core. Trigger: T3+ task requiring 2 or more subagents in parallel. File: protocols/core/coordination.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "coordination_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "coordination_protocol"},
+      {"source": "coordination_protocol", "relation": "DEPENDS_ON", "target": "agent_communication_protocol"}
+    ]
+  },
+  {
+    "text": "query-optimization protocol classifies every user request into tiers T1-T5 and maps tiers to agent routing decisions. Category: core. Trigger: every user request. File: protocols/core/query-optimization.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "query_optimization_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "query_optimization_protocol"},
+      {"source": "dispatcher_protocol", "relation": "DEPENDS_ON", "target": "query_optimization_protocol"}
+    ]
+  },
+  {
+    "text": "mcp-management protocol handles MCP profile switching from core to full, adding new servers, and managing token overhead. Profiles: core (~4K), db (~7K), web (~8K), research (~5K), full (~16K). Category: core. File: protocols/core/mcp-management.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "mcp_management_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "mcp_management_protocol"}
+    ]
+  },
+  {
+    "text": "agent-creation protocol creates new domain agents using templates. Includes a testing step after creation. Category: agents. Trigger: new domain required or initialization Phase 4. File: protocols/agents/agent-creation.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "agent_creation_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "llm_engineer", "relation": "IMPLEMENTS", "target": "agent_creation_protocol"},
+      {"source": "agent_creation_protocol", "relation": "DEPENDS_ON", "target": "agent_testing_protocol"}
+    ]
+  },
+  {
+    "text": "agent-communication protocol provides standardized agent dispatch format and prompt contracts. Category: agents. Trigger: every agent dispatch. File: protocols/agents/agent-communication.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "agent_communication_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "agent_communication_protocol"}
+    ]
+  },
+  {
+    "text": "meta protocol handles protocol CRUD lifecycle, auto-creation triggers, and index maintenance. Category: agents. Primary implementer: protocol-manager. File: protocols/agents/meta.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "meta_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "protocol_manager", "relation": "IMPLEMENTS", "target": "meta_protocol"}
+    ]
+  },
+  {
+    "text": "exploration protocol handles pathfinder task routing across 6 modes including self-explore. Category: knowledge. Trigger: pathfinder tasks or /explore command. File: protocols/knowledge/exploration.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "exploration_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "pathfinder", "relation": "IMPLEMENTS", "target": "exploration_protocol"},
+      {"source": "exploration_protocol", "relation": "DEPENDS_ON", "target": "memory_protocol"}
+    ]
+  },
+  {
+    "text": "memory protocol handles memory read and write operations using Qdrant vectors and Neo4j graph with fastembed 384d embeddings. Category: knowledge. Used by coordinator and pathfinder. File: protocols/knowledge/memory.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "memory_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "memory_protocol"},
+      {"source": "pathfinder", "relation": "IMPLEMENTS", "target": "memory_protocol"}
+    ]
+  },
+  {
+    "text": "context-engineering protocol manages context window assembly, token budgets, and compression strategies before agent dispatch. Category: knowledge. File: protocols/knowledge/context-engineering.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "context_engineering_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "llm_engineer", "relation": "IMPLEMENTS", "target": "context_engineering_protocol"},
+      {"source": "context_engineering_protocol", "relation": "DEPENDS_ON", "target": "memory_protocol"}
+    ]
+  },
+  {
+    "text": "testing protocol handles verification and benchmarks for build-up testing and agent validation. Category: quality. Trigger: build-up testing, agent validation. File: protocols/quality/testing.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "testing_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "testing_protocol"},
+      {"source": "testing_protocol", "relation": "DEPENDS_ON", "target": "cloning_protocol"}
+    ]
+  },
+  {
+    "text": "cloning protocol handles the build-up pipeline with full path testing. Category: quality. Used during build-up. File: protocols/quality/cloning.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "cloning_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "cloning_protocol"}
+    ]
+  },
+  {
+    "text": "security-logging protocol handles input validation failures and suspicious input detection. Maintains audit trail at logs/security-audit.log. PROTECTED from self-modification. Category: quality. File: protocols/quality/security-logging.md.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "protocol",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "security_logging_protocol", "type": "protocol"}
+    ],
+    "relations": [
+      {"source": "coordinator", "relation": "USES", "target": "security_logging_protocol"}
+    ]
+  },
+  {
+    "text": "context7 MCP server provides library documentation lookup. Usage pattern: call resolve-library-id before query-docs. MUST NOT query without resolving ID first. Available in profiles: core, db, web, research, full.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "mcp_server",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "context7", "type": "mcp_server"}
+    ],
+    "relations": [
+      {"source": "context7", "relation": "PROVIDES_TOOL", "target": "resolve_library_id"},
+      {"source": "context7", "relation": "PROVIDES_TOOL", "target": "query_docs"},
+      {"source": "context7", "relation": "PART_OF_PROFILE", "target": "core"}
+    ]
+  },
+  {
+    "text": "filesystem MCP server provides directory tree listing, file move, and workspace navigation operations. Use for directory_tree and move operations. MUST NOT access files outside workspace. Available in profiles: core, db, web, research, full.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "mcp_server",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "filesystem", "type": "mcp_server"}
+    ],
+    "relations": [
+      {"source": "filesystem", "relation": "PROVIDES_TOOL", "target": "directory_tree"},
+      {"source": "filesystem", "relation": "PROVIDES_TOOL", "target": "move_file"},
+      {"source": "filesystem", "relation": "PART_OF_PROFILE", "target": "core"}
+    ]
+  },
+  {
+    "text": "neo4j MCP server provides graph database Cypher query execution and schema introspection. MUST call get_neo4j_schema before writing Cypher. Used by engineer agent. Available in profiles: db, full.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "mcp_server",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "neo4j", "type": "mcp_server"}
+    ],
+    "relations": [
+      {"source": "neo4j", "relation": "PROVIDES_TOOL", "target": "read_cypher"},
+      {"source": "neo4j", "relation": "PROVIDES_TOOL", "target": "write_cypher"},
+      {"source": "neo4j", "relation": "PROVIDES_TOOL", "target": "get_schema"},
+      {"source": "engineer", "relation": "USES_MCP", "target": "neo4j"},
+      {"source": "neo4j", "relation": "PART_OF_PROFILE", "target": "db"}
+    ]
+  },
+  {
+    "text": "qdrant MCP server provides vector store debugging and collection operations. Use for debugging only — routine memory ops use Python scripts. Used by engineer agent. Available in profiles: db, full.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "mcp_server",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "qdrant", "type": "mcp_server"}
+    ],
+    "relations": [
+      {"source": "qdrant", "relation": "PROVIDES_TOOL", "target": "qdrant_find"},
+      {"source": "qdrant", "relation": "PROVIDES_TOOL", "target": "qdrant_store"},
+      {"source": "engineer", "relation": "USES_MCP", "target": "qdrant"},
+      {"source": "qdrant", "relation": "PART_OF_PROFILE", "target": "db"}
+    ]
+  },
+  {
+    "text": "github MCP server provides PR management, issue tracking, code search, and code review operations. Used by engineer and llm-engineer agents. Push requires user confirmation. Available in profiles: web, full.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "mcp_server",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "github", "type": "mcp_server"}
+    ],
+    "relations": [
+      {"source": "github", "relation": "PROVIDES_TOOL", "target": "create_pull_request"},
+      {"source": "github", "relation": "PROVIDES_TOOL", "target": "search_code"},
+      {"source": "engineer", "relation": "USES_MCP", "target": "github"},
+      {"source": "llm_engineer", "relation": "USES_MCP", "target": "github"},
+      {"source": "github", "relation": "PART_OF_PROFILE", "target": "web"}
+    ]
+  },
+  {
+    "text": "playwright MCP server provides browser automation, screenshots, and UI testing. MUST NOT leave browser open after task completes. Available in profiles: web, full.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "mcp_server",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "playwright", "type": "mcp_server"}
+    ],
+    "relations": [
+      {"source": "playwright", "relation": "PROVIDES_TOOL", "target": "browser_navigate"},
+      {"source": "playwright", "relation": "PROVIDES_TOOL", "target": "browser_snapshot"},
+      {"source": "playwright", "relation": "PART_OF_PROFILE", "target": "web"}
+    ]
+  },
+  {
+    "text": "semgrep MCP server provides static code analysis and security scanning. MUST run on security-critical code changes. MUST NOT skip when code handles user input. Available in profile: full only.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "mcp_server",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "semgrep", "type": "mcp_server"}
+    ],
+    "relations": [
+      {"source": "semgrep", "relation": "PROVIDES_TOOL", "target": "semgrep_scan"},
+      {"source": "semgrep", "relation": "PART_OF_PROFILE", "target": "full"}
+    ]
+  },
+  {
+    "text": "youtube-transcript MCP server provides video transcript extraction for research. Process videos only on user request. Available in profiles: research, full. Not declared in any agent frontmatter.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "mcp_server",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "youtube_transcript", "type": "mcp_server"}
+    ],
+    "relations": [
+      {"source": "youtube_transcript", "relation": "PROVIDES_TOOL", "target": "get_transcript"},
+      {"source": "youtube_transcript", "relation": "PART_OF_PROFILE", "target": "research"}
+    ]
+  },
+  {
+    "text": "Qdrant vector store is the vector memory layer. Collection: workflow_memory. Embeddings: 384-dimensional all-MiniLM-L6-v2 via fastembed. Similarity: cosine. Local deployment, zero API cost. Switch: mcp/mcp_configure.py.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "memory",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "qdrant_store", "type": "component"}
+    ],
+    "relations": [
+      {"source": "memory_protocol", "relation": "STORES_IN", "target": "qdrant_store"},
+      {"source": "qdrant_store", "relation": "USES", "target": "fastembed_384d"}
+    ]
+  },
+  {
+    "text": "Neo4j graph store is the graph memory layer. Stores entity nodes and relationship edges from memory records. Fulltext index on name and text fields. Used for graph traversal queries alongside Qdrant vector search.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "memory",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "neo4j_store", "type": "component"}
+    ],
+    "relations": [
+      {"source": "memory_protocol", "relation": "STORES_IN", "target": "neo4j_store"},
+      {"source": "neo4j_store", "relation": "PROVIDES", "target": "graph_traversal"}
+    ]
+  },
+  {
+    "text": "fastembed_384d is the local embedding model all-MiniLM-L6-v2 at 384 dimensions. Model size approximately 90MB. Local inference with zero API cost. Used by memory_write.py and matches the Qdrant MCP server embedding configuration.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "memory",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "fastembed_384d", "type": "component"}
+    ],
+    "relations": [
+      {"source": "qdrant_store", "relation": "USES", "target": "fastembed_384d"},
+      {"source": "memory_write_script", "relation": "USES", "target": "fastembed_384d"}
+    ]
+  },
+  {
+    "text": "Protected files security gate: 4 files are immutable to self-modification by agents or protocols. Files: protocols/core/build-up.md, protocols/quality/security-logging.md, memory/scripts/research_validate.py, memory/scripts/memory_write.py. Human edit only.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "security",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "protected_files_gate", "type": "security_gate"}
+    ],
+    "relations": [
+      {"source": "protected_files_gate", "relation": "PROTECTS", "target": "build_up_protocol"},
+      {"source": "protected_files_gate", "relation": "PROTECTS", "target": "security_logging_protocol"},
+      {"source": "protected_files_gate", "relation": "PROTECTS", "target": "memory_write_script"}
+    ]
+  },
+  {
+    "text": "CLAUDE.md immutable blocks security gate: 3 sections in CLAUDE.md are protected from agent modification. Blocks: Critical Rules (6 MUSTs + 4 MUST NOTs), Language Protocol (language assignments), Research Data Push Rules (push confirmation and audit). Human edit only.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "security",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "immutable_blocks_gate", "type": "security_gate"}
+    ],
+    "relations": [
+      {"source": "immutable_blocks_gate", "relation": "ENFORCES", "target": "critical_rules"},
+      {"source": "immutable_blocks_gate", "relation": "ENFORCES", "target": "language_protocol"}
+    ]
+  },
+  {
+    "text": "context-engineering knowledge domain covers context management, memory architecture, and session design. Key concepts: Context Rot, memory taxonomy, ETL pipelines, compression strategies, storage architectures. 12 reference files in docs/.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "knowledge_domain",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "context_engineering_domain", "type": "knowledge_domain"}
+    ],
+    "relations": [
+      {"source": "context_engineering_domain", "relation": "INFORMS", "target": "coordinator"},
+      {"source": "context_engineering_domain", "relation": "DOCUMENTS", "target": "context_window_management"}
+    ]
+  },
+  {
+    "text": "claude-opus-4-6 knowledge domain covers Claude model capabilities, API usage, and optimization patterns. Key concepts: T1-T5 tier system, Extended Thinking, tool use, prompt caching, structured output, vision. 14 reference files in docs/.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "knowledge_domain",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "claude_opus_46_domain", "type": "knowledge_domain"}
+    ],
+    "relations": [
+      {"source": "claude_opus_46_domain", "relation": "INFORMS", "target": "coordinator"},
+      {"source": "claude_opus_46_domain", "relation": "DOCUMENTS", "target": "model_capabilities"}
+    ]
+  },
+  {
+    "text": "rag-graphrag knowledge domain covers retrieval-augmented generation and knowledge graph integration. Key concepts: Hybrid RAG, agentic RAG, HyDE, GraphRAG, modular RAG architecture, query optimization. 9 reference files in docs/.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "knowledge_domain",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "rag_graphrag_domain", "type": "knowledge_domain"}
+    ],
+    "relations": [
+      {"source": "rag_graphrag_domain", "relation": "INFORMS", "target": "coordinator"},
+      {"source": "rag_graphrag_domain", "relation": "DOCUMENTS", "target": "retrieval_architecture"}
+    ]
+  },
+  {
+    "text": "neo4j knowledge domain covers graph database design and querying. Key concepts: Cypher optimization, APOC procedures, GraphRAG integration, temporal graphs, Neo4j drivers. 7 reference files in docs/.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "knowledge_domain",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "neo4j_domain", "type": "knowledge_domain"}
+    ],
+    "relations": [
+      {"source": "neo4j_domain", "relation": "INFORMS", "target": "coordinator"},
+      {"source": "neo4j_domain", "relation": "DOCUMENTS", "target": "graph_database_patterns"}
+    ]
+  },
+  {
+    "text": "embeddings-e5 knowledge domain covers embedding models for semantic search. Key concepts: fastembed, multilingual E5, prefix usage, batching, optimization techniques. 6 reference files in docs/.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "knowledge_domain",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "embeddings_e5_domain", "type": "knowledge_domain"}
+    ],
+    "relations": [
+      {"source": "embeddings_e5_domain", "relation": "INFORMS", "target": "coordinator"},
+      {"source": "embeddings_e5_domain", "relation": "DOCUMENTS", "target": "semantic_search"}
+    ]
+  },
+  {
+    "text": "reranker-bge knowledge domain covers cross-encoder reranking for RAG pipelines. Key concepts: BGE reranker, scoring thresholds, performance tuning, integration with retrieval stages. 5 reference files in docs/.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "knowledge_domain",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "reranker_bge_domain", "type": "knowledge_domain"}
+    ],
+    "relations": [
+      {"source": "reranker_bge_domain", "relation": "INFORMS", "target": "coordinator"},
+      {"source": "reranker_bge_domain", "relation": "DOCUMENTS", "target": "reranking_pipeline"}
+    ]
+  },
+  {
+    "text": "json-prompting knowledge domain covers structured LLM output patterns. Key concepts: JSON mode vs structured outputs, Pydantic models, Instructor library, schema mastery, output validation. 7 reference files in docs/.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "knowledge_domain",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "json_prompting_domain", "type": "knowledge_domain"}
+    ],
+    "relations": [
+      {"source": "json_prompting_domain", "relation": "INFORMS", "target": "coordinator"},
+      {"source": "json_prompting_domain", "relation": "DOCUMENTS", "target": "structured_output"}
+    ]
+  },
+  {
+    "text": "docker knowledge domain covers container orchestration for infrastructure. Key concepts: Docker Compose, multi-service stacks, healthchecks, build optimization, container security. 5 reference files in docs/.",
+    "user_id": "system",
+    "agent_id": "coordinator",
+    "metadata": {
+      "type": "self_architecture",
+      "subtype": "knowledge_domain",
+      "_source": "workflow"
+    },
+    "entities": [
+      {"name": "docker_domain", "type": "knowledge_domain"}
+    ],
+    "relations": [
+      {"source": "docker_domain", "relation": "INFORMS", "target": "coordinator"},
+      {"source": "docker_domain", "relation": "DOCUMENTS", "target": "container_orchestration"}
+    ]
+  }
+]
